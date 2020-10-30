@@ -8,6 +8,13 @@ metadata:
   creationTimestamp: null
   name: guestbooks.webapp.crd.example
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.url
+    name: URL
+    type: string
+  - JSONPath: .spec.frontend.replicas
+    name: Desired
+    type: integer
   group: webapp.crd.example
   names:
     kind: GuestBook
@@ -15,6 +22,8 @@ spec:
     plural: guestbooks
     singular: guestbook
   scope: Namespaced
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       description: GuestBook is the Schema for the guestbooks API
@@ -34,13 +43,56 @@ spec:
         spec:
           description: GuestBookSpec defines the desired state of GuestBook
           properties:
-            foo:
-              description: Foo is an example field of GuestBook. Edit GuestBook_types.go
-                to remove/update
+            frontend:
+              properties:
+                replicas:
+                  format: int32
+                  minimum: 0
+                  type: integer
+                resources:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        anyOf:
+                        - type: integer
+                        - type: string
+                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                        x-kubernetes-int-or-string: true
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        anyOf:
+                        - type: integer
+                        - type: string
+                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                        x-kubernetes-int-or-string: true
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                servingPort:
+                  format: int32
+                  minimum: 0
+                  type: integer
+              type: object
+            redisName:
               type: string
+          required:
+          - frontend
           type: object
         status:
           description: GuestBookStatus defines the observed state of GuestBook
+          properties:
+            url:
+              type: string
+          required:
+          - url
           type: object
       type: object
   version: v1

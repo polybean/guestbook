@@ -7,6 +7,24 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
   - webapp.crd.example
   resources:
   - guestbooks
@@ -22,6 +40,26 @@ rules:
   - webapp.crd.example
   resources:
   - guestbooks/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - webapp.crd.example
+  resources:
+  - redis
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - webapp.crd.example
+  resources:
+  - redis/status
   verbs:
   - get
   - patch

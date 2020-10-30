@@ -25,20 +25,26 @@ import (
 
 // RedisSpec defines the desired state of Redis
 type RedisSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// +optional
+	// +kubebuilder:validation:Minimum=0
 
-	// Foo is an example field of Redis. Edit Redis_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// The number of follower instances to run.
+	FollowerReplicas *int32 `json:"followerReplicas,omitempty"`
 }
 
 // RedisStatus defines the observed state of Redis
 type RedisStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// The name of the service created for the Redis leader.
+	LeaderService string `json:"leaderService"`
+	// The name of the service created for the Redis follower.
+	FollowerService string `json:"followerService"`
 }
 
 // +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:JSONPath=".status.leaderService",name="Leader",type="string"
+// +kubebuilder:printcolumn:JSONPath=".status.followerService",name="Follower",type="string"
+// +kubebuilder:printcolumn:JSONPath=".spec.followerReplicas",name="Desired",type="integer"
 
 // Redis is the Schema for the redis API
 type Redis struct {
