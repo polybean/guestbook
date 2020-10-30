@@ -1,0 +1,3 @@
+domain: crd.example
+repo: example
+version: "2"
